@@ -13,7 +13,8 @@ from datetime import datetime, timedelta
 from bson.objectid import ObjectId
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import get_jwt_identity
-from services.ocr_service import reader
+# from services.ocr_service import reader
+from services.ocr_service import receipt_to_text
 import pytz
 
 auth_bp = Blueprint('auth', __name__)
@@ -390,16 +391,13 @@ def scan_struk():
     image_file = request.files["image"]
 
     try:
+        import cv2
+        import numpy as np
+
         file_bytes = np.frombuffer(image_file.read(), np.uint8)
         image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
 
-        ocr_lines = reader.readtext(
-            image,
-            detail=0,
-            paragraph=False
-        )
-
-        raw_text = "\n".join(ocr_lines)
+        raw_text = receipt_to_text(image)
 
     except Exception as exc:
         return jsonify({
