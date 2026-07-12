@@ -1,13 +1,15 @@
 import os
 import re
 import cv2
-import easyocr
+# import easyocr
 import numpy as np
 from datetime import datetime, timezone
 from flask import Blueprint, request, jsonify
 from bson import ObjectId
 from utils.db import mongo
-from utils.ocr_reader import reader
+# from utils.ocr_reader import reader
+import pytesseract
+import cv2
 
 scan_struk_bp = Blueprint("scan_struk", __name__)
 
@@ -58,7 +60,6 @@ def preprocess(image):
 
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    # Sekarang resize 2x ini aman, karena base image sudah dibatasi max 1600px
     gray = cv2.resize(gray, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
 
     gray = cv2.GaussianBlur(gray, (3, 3), 0)
@@ -69,7 +70,6 @@ def preprocess(image):
     )
 
     return gray
-
 # ============================================================
 # OCR
 # ============================================================
@@ -78,14 +78,12 @@ def read_receipt(image):
 
     processed = preprocess(image)
 
-    result = reader.readtext(
-        processed,
-        detail=0,
-        paragraph=False
-    )
+    raw_text = pytesseract.image_to_string(processed, lang='ind')
 
-    return result
+    # pecah per baris biar formatnya tetap list (kompatibel dengan kode lama yang expect list)
+    lines = [line.strip() for line in raw_text.split('\n') if line.strip()]
 
+    return lines
 # ============================================================
 # PARSE NOMOR METER
 # ============================================================
