@@ -686,6 +686,9 @@ def scan_meter_image(image, has_decimal=True):
                 return round(value, 2)
 
     print("[SEVEN-SEG] gagal/tidak yakin, fallback ke EasyOCR...")
+    if reader is None:
+        print("[INFO] EasyOCR dinonaktifkan (RAM terbatas), skip fallback.")
+        return None
 
     # === STEP 3: FALLBACK — EasyOCR ===
     variants = get_preprocess_variants(cropped)
