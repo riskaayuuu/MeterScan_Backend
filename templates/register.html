@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Register Admin</title>
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:'Segoe UI', sans-serif;
+        }
+
+        body{
+
+            height:100vh;
+
+            background:
+            linear-gradient(
+                135deg,
+                #0F766E,
+                #134E4A
+            );
+
+            display:flex;
+
+            justify-content:center;
+
+            align-items:center;
+
+            overflow:hidden;
+
+            padding:20px;
+        }
+
+        .wrapper{
+
+            width:100%;
+            max-width:820px;
+
+            height:520px;
+
+            background:white;
+
+            border-radius:24px;
+
+            overflow:hidden;
+
+            display:flex;
+
+            box-shadow:
+            0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        /* =========================
+           LEFT
+        ========================= */
+
+        .left{
+
+            width:40%;
+
+            background:
+            linear-gradient(
+                180deg,
+                #115E59,
+                #0F766E
+            );
+
+            color:white;
+
+            padding:40px 32px;
+
+            display:flex;
+
+            flex-direction:column;
+
+            justify-content:center;
+        }
+
+        .logo{
+
+            font-size:28px;
+
+            font-weight:bold;
+
+            margin-bottom:28px;
+        }
+
+        .headline{
+
+            font-size:32px;
+
+            font-weight:700;
+
+            line-height:1.3;
+
+            margin-bottom:14px;
+        }
+
+        .desc{
+
+            font-size:14px;
+
+            line-height:1.7;
+
+            opacity:0.9;
+        }
+
+        /* =========================
+           RIGHT
+        ========================= */
+
+        .right{
+
+            width:60%;
+
+            padding:42px;
+
+            display:flex;
+
+            flex-direction:column;
+
+            justify-content:center;
+        }
+
+        .title{
+
+            font-size:28px;
+
+            font-weight:700;
+
+            color:#111827;
+
+            margin-bottom:8px;
+        }
+
+        .subtitle{
+
+            color:#6B7280;
+
+            font-size:14px;
+
+            margin-bottom:24px;
+
+            line-height:1.6;
+        }
+
+        .input-group{
+
+            margin-bottom:16px;
+        }
+
+        .label{
+
+            display:block;
+
+            margin-bottom:7px;
+
+            font-size:13px;
+
+            font-weight:600;
+
+            color:#374151;
+        }
+
+        .input{
+
+            width:100%;
+
+            padding:14px 15px;
+
+            border:1px solid #D1D5DB;
+
+            border-radius:14px;
+
+            outline:none;
+
+            font-size:14px;
+
+            transition:0.3s;
+        }
+
+        .input:focus{
+
+            border-color:#0F766E;
+
+            box-shadow:
+            0 0 0 3px rgba(15,118,110,0.1);
+        }
+
+        .btn{
+
+            width:100%;
+
+            height:50px;
+
+            border:none;
+
+            border-radius:14px;
+
+            background:
+            linear-gradient(
+                135deg,
+                #0F766E,
+                #14B8A6
+            );
+
+            color:white;
+
+            font-size:14px;
+
+            font-weight:600;
+
+            cursor:pointer;
+
+            margin-top:8px;
+        }
+
+        .bottom{
+
+            margin-top:18px;
+
+            text-align:center;
+
+            font-size:13px;
+
+            color:#6B7280;
+        }
+
+        .bottom a{
+
+            color:#0F766E;
+
+            text-decoration:none;
+
+            font-weight:600;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media(max-width:768px){
+
+            body{
+
+                height:auto;
+
+                overflow:auto;
+            }
+
+            .wrapper{
+
+                flex-direction:column;
+
+                height:auto;
+            }
+
+            .left,
+            .right{
+
+                width:100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="wrapper">
+
+    <!-- LEFT -->
+
+    <div class="left">
+
+        <div class="logo">
+
+            ⚡ MeterScan
+
+        </div>
+
+        <div class="headline">
+
+            Smart Energy
+            Monitoring
+
+        </div>
+
+        <div class="desc">
+
+            Dashboard admin untuk monitoring
+            penggunaan listrik dan data pelanggan.
+
+        </div>
+
+    </div>
+
+    <!-- RIGHT -->
+
+    <div class="right">
+
+        <div class="title">
+
+            Register Admin
+
+        </div>
+
+        <div class="subtitle">
+
+            Buat akun admin baru
+            untuk mengakses sistem MeterScan.
+
+        </div>
+
+        <form id="registerForm">
+
+            <div class="input-group">
+
+                <label class="label">
+
+                    Nama Lengkap
+
+                </label>
+
+                <input
+                    type="text"
+                    id="name"
+                    class="input"
+                    placeholder="Masukkan nama"
+                    required
+                >
+
+            </div>
+
+            <div class="input-group">
+
+                <label class="label">
+
+                    Email
+
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    class="input"
+                    placeholder="Masukkan email"
+                    required
+                >
+
+            </div>
+
+            <div class="input-group">
+
+                <label class="label">
+
+                    Password
+
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    class="input"
+                    placeholder="Masukkan password"
+                    required
+                >
+
+            </div>
+
+            <button
+                type="submit"
+                class="btn"
+            >
+
+                Daftar Sekarang
+
+            </button>
+
+        </form>
+
+        <div class="bottom">
+
+            Sudah punya akun?
+
+            <a href="/">
+
+                Login
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+document.getElementById(
+    'registerForm'
+).addEventListener('submit', async(e)=>{
+
+    e.preventDefault()
+
+    const response = await fetch(
+
+        '/api/register',
+
+        {
+
+            method:'POST',
+
+            headers:{
+                'Content-Type':'application/json'
+            },
+
+            body: JSON.stringify({
+
+                name:
+                document.getElementById('name').value,
+
+                email:
+                document.getElementById('email').value,
+
+                password:
+                document.getElementById('password').value
+
+            })
+
+        }
+
+    )
+
+    const data = await response.json()
+
+    alert(data.message)
+
+    if(response.status == 201){
+
+        window.location.href='/'
+
+    }
+
+})
+
+</script>
+
+</body>
+</html>
