@@ -6,15 +6,24 @@ from pymongo import MongoClient
 
 bigdata_bp = Blueprint("bigdata", __name__)
 
-scraping_client = MongoClient(
-    "mongodb+srv://dindadestriyani939:dinda54321@cluster0.hw6y1fq.mongodb.net/?appName=Cluster0",
-    serverSelectionTimeoutMS=5000
-)
+# scraping_client = MongoClient(
+#     "mongodb+srv://dindadestriyani939:dinda54321@cluster0.hw6y1fq.mongodb.net/?appName=Cluster0",
+#     serverSelectionTimeoutMS=5000
+# )
+# try:
+#     scraping_client.server_info()
+#     print("✅ Berhasil konek ke MongoDB Atlas")
+# except Exception as e:
+#     print("❌ Gagal konek:", e)
+
+scraping_client = None
+scraping_collection = None
 try:
-    scraping_client.server_info()
-    print("✅ Berhasil konek ke MongoDB Atlas")
+    scraping_client = MongoClient(os.getenv("SCRAPING_MONGO_URI"), serverSelectionTimeoutMS=5000)
+    scraping_db = scraping_client["meterscan_db"]
+    scraping_collection = scraping_db["electricity_trends"]
 except Exception as e:
-    print("❌ Gagal konek:", e)
+    print("Gagal konek:", e)
 
 scraping_db = scraping_client["meterscan_db"]
 scraping_collection = scraping_db["electricity_trends"]
@@ -24,8 +33,8 @@ print("DATABASE :", scraping_db.name)
 print("COLLECTION :", scraping_collection.name)
 # print("JUMLAH :", scraping_collection.count_documents({}))
 
-for x in scraping_collection.find().limit(3):
-    print(x)
+# for x in scraping_collection.find().limit(3):
+#     print(x)
 
 print("="*50)
 
