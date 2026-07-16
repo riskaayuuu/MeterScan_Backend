@@ -52,6 +52,34 @@ try:
 except Exception as e:
     print("Gagal konek:", e)
 
+
+import requests
+import os
+
+@bigdata_bp.route("/test-resend")
+def test_resend():
+    try:
+        response = requests.post(
+            "https://api.resend.com/emails",
+            headers={
+                "Authorization": f"Bearer {os.getenv('RESEND_API_KEY')}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "from": "MeterScan <onboarding@resend.dev>",
+                "to": ["meterscan89@gmail.com"],
+                "subject": "Test Resend",
+                "html": "<p>Ini email test dari MeterScan</p>"
+            },
+            timeout=10
+        )
+        return {
+            "status_code": response.status_code,
+            "response": response.text,
+            "api_key_terdeteksi": bool(os.getenv('RESEND_API_KEY'))
+        }
+    except Exception as e:
+        return {"error": str(e)}
 @bigdata_bp.route("/test-smtp")
 def test_smtp():
     import socket
