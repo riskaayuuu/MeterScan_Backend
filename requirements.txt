@@ -53,3 +53,4 @@ tzlocal==5.4.4
 Werkzeug==3.1.8
 pytesseract
 gunicorn
+requests
