@@ -29,6 +29,16 @@ for x in scraping_collection.find().limit(3):
 
 print("="*50)
 
+@bigdata_bp.route("/test-smtp")
+def test_smtp():
+    import socket
+    try:
+        s = socket.create_connection(("smtp.gmail.com", 587), timeout=5)
+        s.close()
+        return {"status": "SMTP BISA DIAKSES"}
+    except Exception as e:
+        return {"status": "SMTP DIBLOKIR / GAGAL", "error": str(e)}
+
 @bigdata_bp.route("/", methods=["GET"])
 def home():
     return render_template("login.html")
