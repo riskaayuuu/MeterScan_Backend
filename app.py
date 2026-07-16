@@ -84,7 +84,7 @@ def hitung_dan_sinkronisasi_data():
 # Menyalakan mesin scheduler background
 scheduler = BackgroundScheduler()
 # Set interval 1 menit untuk demo saat presentasi UAS
-scheduler.add_job(func=hitung_dan_sinkronisasi_data, trigger="interval", minutes=1)
+scheduler.add_job(func=hitung_dan_sinkronisasi_data, trigger="interval", minutes=15)
 scheduler.start()
 
 
