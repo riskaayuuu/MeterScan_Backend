@@ -18,6 +18,8 @@ from services.ocr_service import receipt_to_text
 import pytz
 import os
 import requests
+from flask_mail import Message
+from utils.mail import mail
 
 auth_bp = Blueprint('auth', __name__)
 scan_struk_bp = Blueprint(
@@ -56,44 +58,29 @@ def generate_otp():
 # =====================================================
 def send_otp_email(email, otp, name):
     try:
-        response = requests.post(
-            "https://api.resend.com/emails",
-            headers={
-                "Authorization": f"Bearer {os.getenv('RESEND_API_KEY')}",
-                "Content-Type": "application/json"
-            },
-            json={
-                "from": "MeterScan <onboarding@resend.dev>",
-                "to": [email],
-                "subject": "Kode Verifikasi MeterScan",
-                "html": f"""
-                <div style="font-family: Arial, sans-serif; max-width: 480px; margin: auto; 
-                            padding: 32px; border-radius: 16px; border: 1px solid #e2e8f0;">
-                    <div style="text-align: center; margin-bottom: 24px;">
-                        <h2 style="color: #0F766E; margin: 0;">⚡ MeterScan</h2>
-                    </div>
-                    <p style="font-size: 16px; color: #334155;">Halo, <b>{name}</b>!</p>
-                    <p style="color: #64748b;">Gunakan kode berikut untuk verifikasi akun MeterScan kamu:</p>
-                    <div style="text-align: center; margin: 32px 0;">
-                        <span style="font-size: 42px; font-weight: bold; letter-spacing: 12px; color: #0F766E;">
-                            {otp}
-                        </span>
-                    </div>
-                    <p style="color: #94a3b8; font-size: 13px; text-align: center;">
-                        Kode berlaku selama <b>5 menit</b>.<br>Jangan bagikan kode ini kepada siapapun.
-                    </p>
-                </div>
-                """
-            },
-            timeout=10
-        )
-        if response.status_code in (200, 201):
-            return True
-        else:
-            print(f"Resend gagal: {response.status_code} - {response.text}")
-            return False
+        msg = Message("Kode Verifikasi MeterScan", recipients=[email])
+        msg.html = f"""
+        <div style="font-family: Arial, sans-serif; max-width: 480px; margin: auto; 
+                    padding: 32px; border-radius: 16px; border: 1px solid #e2e8f0;">
+            <div style="text-align: center; margin-bottom: 24px;">
+                <h2 style="color: #0F766E; margin: 0;">⚡ MeterScan</h2>
+            </div>
+            <p style="font-size: 16px; color: #334155;">Halo, <b>{name}</b>!</p>
+            <p style="color: #64748b;">Gunakan kode berikut untuk verifikasi akun MeterScan kamu:</p>
+            <div style="text-align: center; margin: 32px 0;">
+                <span style="font-size: 42px; font-weight: bold; letter-spacing: 12px; color: #0F766E;">
+                    {otp}
+                </span>
+            </div>
+            <p style="color: #94a3b8; font-size: 13px; text-align: center;">
+                Kode berlaku selama <b>5 menit</b>.<br>Jangan bagikan kode ini kepada siapapun.
+            </p>
+        </div>
+        """
+        mail.send(msg)
+        return True
     except Exception as e:
-        print(f"Error kirim email: {e}")
+        print(f"Error kirim email SMTP: {e}")
         return False
 # =====================================================
 # REGISTER — kirim OTP, belum simpan user
