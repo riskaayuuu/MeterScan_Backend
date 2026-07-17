@@ -105,6 +105,148 @@ def send_otp_email(email, otp, name):
 # =====================================================
 # REGISTER — kirim OTP, belum simpan user
 # =====================================================
+# @auth_bp.route('/register', methods=['POST'])
+# def register():
+#     data = request.get_json()
+
+#     username = data.get('username')
+#     email = data.get('email')
+#     password = data.get('password')
+#     electricity_type = data.get('electricity_type')
+
+#     # Validasi
+#     if not username or not email or not password or not electricity_type:
+#         return jsonify({
+#         "message": "Data tidak lengkap"
+#     }), 400
+
+#     # Cek email sudah terdaftar
+#     if mongo.db.users.find_one({"email": email}):
+#         return jsonify({"message": "Email sudah digunakan"}), 400
+
+#     # Generate OTP
+#     otp     = generate_otp()
+#     expired = datetime.utcnow() + timedelta(minutes=5)
+
+#     # Hash password
+#     hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+#     # Simpan ke collection otp_pending (belum jadi user)
+#     mongo.db.otp_pending.delete_many({"email": email})  # hapus OTP lama
+#     mongo.db.otp_pending.insert_one({
+#     "username": username,
+#     "email": email,
+#     "password": hashed,
+#     "electricity_type": electricity_type,
+#     "otp": otp,
+#     "expired_at": expired,
+#     "created_at": datetime.utcnow()
+#     })
+
+#     # Kirim email
+#     sent = send_otp_email(email, otp, username)
+#     if not sent:
+#     #     return jsonify({"message": "Gagal mengirim email OTP"}), 500
+
+#     # return jsonify({
+#     #     "status":  "success",
+#     #     "message": "OTP dikirim ke email kamu",
+#     #     "email":   email
+#     # }), 200
+#         # Kirim email
+#         # KODE BYPASS UNTUK DEMO UAS / DEVELOPMENT:
+#         # Jika email gagal dikirim (karena limitasi Resend / Key belum diset),
+#         # kita tetap kembalikan status 200 agar Flutter langsung pindah ke halaman OTP.
+#         # Anda bisa melihat OTP-nya langsung di MongoDB Atlas untuk dimasukkan ke form Flutter.
+#         print(f"[BYPASS DEVELOPMENT] Email gagal ke {email}. OTP: {otp}")
+#             return jsonify({
+#                 "status":  "success",
+#                 "message": "Registrasi diproses (Email gagal dikirim, cek OTP di MongoDB)",
+#                 "email":   email
+#             }), 200
+    
+#         return jsonify({
+#             "status":  "success",
+#             "message": "OTP dikirim ke email kamu",
+#             "email":   email
+#         }), 200
+
+
+# # =====================================================
+# # VERIFY OTP — cek OTP, baru simpan user
+# # =====================================================
+# @auth_bp.route('/verify-otp', methods=['POST'])
+# def verify_otp():
+#     data  = request.get_json()
+#     email = data.get('email')
+#     otp   = data.get('otp')
+
+#     if not email or not otp:
+#         return jsonify({"message": "Email dan OTP wajib diisi"}), 400
+
+#     # Cari data pending
+#     pending = mongo.db.otp_pending.find_one({"email": email})
+
+#     if not pending:
+#         return jsonify({"message": "Data registrasi tidak ditemukan"}), 404
+
+#     # Cek expired
+#     if datetime.utcnow() > pending['expired_at']:
+#         mongo.db.otp_pending.delete_one({"email": email})
+#         return jsonify({"message": "OTP sudah expired, daftar ulang"}), 400
+
+#     # Cek OTP
+#     if pending['otp'] != otp:
+#         return jsonify({"message": "OTP salah"}), 400
+
+#     # OTP benar → simpan user ke collection users
+#     # mongo.db.users.insert_one({
+#     #     "name":       pending['username'],
+#     #     "email":      pending['email'],
+#     #     "password":   pending['password'],
+#     #     "created_at": datetime.utcnow()
+#     # })
+    
+#     # OTP benar → simpan user ke collection users
+#     result = mongo.db.users.insert_one({
+#         "name": pending['username'],
+#         "email": pending['email'],
+#         "password": pending['password'],
+#         "electricity_type": pending['electricity_type'],
+#         "created_at": datetime.utcnow()
+#     })
+
+#     # Ambil ID user yang baru saja terdaftar
+#     user_id = result.inserted_id
+    
+#     # 🌟 FIX: Pastikan memanggil 'log_user_activity' (bukan save_activity)
+#     log_user_activity(
+#         user_id,
+#         "Registrasi Akun",
+#         "User berhasil membuat akun baru"
+#     )
+
+#     # Hapus data pending OTP
+#     mongo.db.otp_pending.delete_one({"email": email})
+
+#     # Langsung login — buat token
+#     user         = mongo.db.users.find_one({"email": email})
+#     access_token = create_access_token(identity=str(user['_id']))
+
+#     return jsonify({
+#         "status":       "success",
+#         "message":      "Registrasi berhasil",
+#         "access_token": access_token,
+#         "user": {
+#         "username": user['name'],
+#         "email": user['email'],
+#         "electricity_type": user['electricity_type']
+#     }
+#     }), 201
+
+# =====================================================
+# REGISTER — kirim OTP, belum simpan user
+# =====================================================
 @auth_bp.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
@@ -117,8 +259,8 @@ def register():
     # Validasi
     if not username or not email or not password or not electricity_type:
         return jsonify({
-        "message": "Data tidak lengkap"
-    }), 400
+            "message": "Data tidak lengkap"
+        }), 400
 
     # Cek email sudah terdaftar
     if mongo.db.users.find_one({"email": email}):
@@ -134,42 +276,32 @@ def register():
     # Simpan ke collection otp_pending (belum jadi user)
     mongo.db.otp_pending.delete_many({"email": email})  # hapus OTP lama
     mongo.db.otp_pending.insert_one({
-    "username": username,
-    "email": email,
-    "password": hashed,
-    "electricity_type": electricity_type,
-    "otp": otp,
-    "expired_at": expired,
-    "created_at": datetime.utcnow()
+        "username": username,
+        "email": email,
+        "password": hashed,
+        "electricity_type": electricity_type,
+        "otp": otp,
+        "expired_at": expired,
+        "created_at": datetime.utcnow()
     })
 
     # Kirim email
     sent = send_otp_email(email, otp, username)
     if not sent:
-    #     return jsonify({"message": "Gagal mengirim email OTP"}), 500
-
-    # return jsonify({
-    #     "status":  "success",
-    #     "message": "OTP dikirim ke email kamu",
-    #     "email":   email
-    # }), 200
-        # Kirim email
         # KODE BYPASS UNTUK DEMO UAS / DEVELOPMENT:
-        # Jika email gagal dikirim (karena limitasi Resend / Key belum diset),
-        # kita tetap kembalikan status 200 agar Flutter langsung pindah ke halaman OTP.
-        # Anda bisa melihat OTP-nya langsung di MongoDB Atlas untuk dimasukkan ke form Flutter.
+        # Jika email gagal dikirim, tetap lanjutkan agar Flutter berpindah ke halaman OTP.
         print(f"[BYPASS DEVELOPMENT] Email gagal ke {email}. OTP: {otp}")
-            return jsonify({
-                "status":  "success",
-                "message": "Registrasi diproses (Email gagal dikirim, cek OTP di MongoDB)",
-                "email":   email
-            }), 200
-    
         return jsonify({
             "status":  "success",
-            "message": "OTP dikirim ke email kamu",
+            "message": "Registrasi diproses (Email gagal dikirim, cek OTP di MongoDB)",
             "email":   email
         }), 200
+
+    return jsonify({
+        "status":  "success",
+        "message": "OTP dikirim ke email kamu",
+        "email":   email
+    }), 200
 
 
 # =====================================================
@@ -198,14 +330,6 @@ def verify_otp():
     # Cek OTP
     if pending['otp'] != otp:
         return jsonify({"message": "OTP salah"}), 400
-
-    # OTP benar → simpan user ke collection users
-    # mongo.db.users.insert_one({
-    #     "name":       pending['username'],
-    #     "email":      pending['email'],
-    #     "password":   pending['password'],
-    #     "created_at": datetime.utcnow()
-    # })
     
     # OTP benar → simpan user ke collection users
     result = mongo.db.users.insert_one({
@@ -219,7 +343,7 @@ def verify_otp():
     # Ambil ID user yang baru saja terdaftar
     user_id = result.inserted_id
     
-    # 🌟 FIX: Pastikan memanggil 'log_user_activity' (bukan save_activity)
+    # Catat log aktivitas
     log_user_activity(
         user_id,
         "Registrasi Akun",
@@ -238,10 +362,10 @@ def verify_otp():
         "message":      "Registrasi berhasil",
         "access_token": access_token,
         "user": {
-        "username": user['name'],
-        "email": user['email'],
-        "electricity_type": user['electricity_type']
-    }
+            "username": user['name'],
+            "email": user['email'],
+            "electricity_type": user['electricity_type']
+        }
     }), 201
 
 
