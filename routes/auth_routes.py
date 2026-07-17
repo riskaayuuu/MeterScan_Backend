@@ -64,16 +64,22 @@ def generate_otp():
 def send_otp_email(email, otp, name):
     try:
         response = requests.post(
-            "https://api.resend.com/emails",
+            "https://api.brevo.com/v3/smtp/email",
             headers={
-                "Authorization": f"Bearer {os.getenv('RESEND_API_KEY')}",
-                "Content-Type": "application/json"
+                "api-key": os.getenv('BREVO_API_KEY'),
+                "Content-Type": "application/json",
+                "Accept": "application/json"
             },
             json={
-                "from": "MeterScan <onboarding@resend.dev>",
-                "to": [email],
+                "sender": {
+                    "name": "MeterScan",
+                    "email": "meterscan89@gmail.com"   # ganti sesuai email yang diverifikasi di Brevo
+                },
+                "to": [
+                    {"email": email, "name": name}
+                ],
                 "subject": "Kode Verifikasi MeterScan",
-                "html": f"""
+                "htmlContent": f"""
                 <div style="font-family: Arial, sans-serif; max-width: 480px; margin: auto; 
                             padding: 32px; border-radius: 16px; border: 1px solid #e2e8f0;">
                     <div style="text-align: center; margin-bottom: 24px;">
@@ -97,7 +103,7 @@ def send_otp_email(email, otp, name):
         if response.status_code in (200, 201):
             return True
         else:
-            print(f"Resend gagal: {response.status_code} - {response.text}")
+            print(f"Brevo gagal: {response.status_code} - {response.text}")
             return False
     except Exception as e:
         print(f"Error kirim email: {e}")
