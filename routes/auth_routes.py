@@ -73,7 +73,7 @@ def send_otp_email(email, otp, name):
             json={
                 "sender": {
                     "name": "Meterscan",
-                    "email": "meterscan89@gmail.com"   # ganti sesuai email yang diverifikasi di Brevo
+                    "email": "riskaayumeilani86@gmail.com"   # ganti sesuai email yang diverifikasi di Brevo
                 },
                 "to": [
                     {"email": email, "name": name}
